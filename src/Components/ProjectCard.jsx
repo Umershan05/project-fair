@@ -1,39 +1,41 @@
 import React,{useState} from 'react'
 import { Card,Modal,Row,Col } from 'react-bootstrap'
 import titleimage from '../Asset/web.jpg'
-function ProjectCard() {
+import { BASE_URL } from '../Services/baseurl';
+function ProjectCard({project}) {
     const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   return (
     <>
-    <Card className='shadow mb-5 btn w-75' onClick={handleShow}>
-      <Card.Img  variant="top" src={titleimage} />
+   {project&& <Card className='shadow mb-5 btn ' onClick={handleShow}>
+      <Card.Img style={{height:"200px"}} variant="top" src={ project?`${BASE_URL}/uploads/${project?.projectImage}`:titleimage} />
       <Card.Body>
-        <Card.Title>Project Title</Card.Title>
+        <Card.Title>{project?.title}</Card.Title>
         </Card.Body>
     </Card>
-    <Modal  show={show} onHide={handleClose}>
+  }
+    <Modal size='lg' show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Project Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <Row>
                 <Col md={6}>
-                <img style={{height:'200px'}} className='img-fluid' src={titleimage} alt='project image'/>
+                <img style={{height:'200px'}} className='img-fluid' src={project?`${BASE_URL}/uploads/${project?.projectImage}`:titleimage} alt='project image'/>
                 </Col>
                 <Col md={6}>
-                    <h2>Project Title</h2>
-                    <p>Project Overview :Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard  </p>
-                    <p>Language Used :<span className='fw-bolder'>HTML,CSS,React</span></p>
+                    <h2 className='text-warning fw-bolder'>{project?.title}</h2>
+                    <p>Project overview:<span className='fw-bolder text-success'>{project?.overview}</span> </p>
+                    <p>Language Used :<span className='fw-bolder'>{project?.languages}</span></p>
                     
                 </Col>
             </Row>
             <div className='mt-3'>
-                        <a href="https://github.com/Umershan05/Ecommerce" target='_blank' className='me-3 btn'><i class="fa-brands fa-github fa-2x"></i></a>
+                        <a href={project?.github} target='_blank' className='me-3 btn'><i class="fa-brands fa-github fa-2x"></i></a>
                    
-                    <a href="https://ecommerce-ashen-theta.vercel.app/" target='_blank' className='me-3 btn'><i class="fa-solid fa-link fa-2x"></i></a>
+                    <a href={project?.website} target='_blank' className='me-3 btn'><i class="fa-solid fa-link fa-2x"></i></a>
                     </div>
         </Modal.Body>
        

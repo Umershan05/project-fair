@@ -1,24 +1,40 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Navbar, Container } from 'react-bootstrap'
+import { tokenAuthorisationContext } from '../Contexts/TokenAuth'
 
 function Header({insideDashboard}) {
+  const {isAuthorized, setIsAuthorized} = useContext(tokenAuthorisationContext)
+
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    // remove all existing user details from browser
+    sessionStorage.removeItem("existingUser")
+    sessionStorage.removeItem("token")
+    setIsAuthorized(false)
+
+    // navigate to landing Page
+    navigate('/')
+  }
   return (
-    <div className='mb-5 d-flex  position-fixed top-0 w-100' style={{ width: '100%', height: '10vh', backgroundColor: '#90ee90' }}>
-      <Link to={'/'} style={{ textDecoration: 'none', color: 'white' }}>
-        <h1 style={{ fontSize: '30px' }} className='fw-bolder text-light mt-3 ms-5'><i class="fa-brands fa-stack-overflow fa-bounce"></i>
-          Project fair</h1>
-      </Link>
-      {insideDashboard&& 
-      <div className=' ms-auto '>
-        <Link to={'/'} style={{ textDecoration: 'none', color: 'white' }}>
-
-          <h2 style={{ fontSize: '20px' }} className='fw-bolder text-primary mt-4 me-5'>LogOut<i class="fa-solid fa-right-from-bracket fa-bounce"></i></h2>
+    <Navbar expand="lg" style={{ backgroundColor: '#99ee90' }} className='position-fixed z-1 top-0 w-100 p-3'>
+    <Container>
+      <Navbar.Brand className='text-white fs-3 fw-bold'>
+        <Link to={'/'} style={{ textDecoration: 'none', color: 'white' }} >
+          <i class="fa-brands fa-stack-overflow fa-bounce me-2"></i>Project Fair
         </Link>
-      </div>
-}
+      </Navbar.Brand>
+      {
+        insideDashboard &&
+        <button style={{textDecoration:'none'}} className='btn btn-link text-info fs-5 fw-bold text-capitalize' onClick={handleLogout}>
+          Logout <i class="fa-solid fa-arrow-right-from-bracket fa-beat-fade ms-2"></i>
+        </button>
+      }
 
-    </div >
-  )
+    </Container>
+  </Navbar >
+)
 }
 
 export default Header

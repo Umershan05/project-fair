@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { registerAPI } from '../Services/allAPI';
+import { loginAPI, registerAPI } from '../Services/allAPI';
+import { tokenAuthorisationContext } from '../Contexts/TokenAuth';
 function Auth({ register }) {
+    const {isAuthorized, setIsAuthorized}=useContext(tokenAuthorisationContext)
     const Navigate=useNavigate()
     const [userData,setUserData]=useState({
         username:"",email:"",password:""
@@ -19,7 +21,7 @@ function Auth({ register }) {
         const result=await registerAPI(userData)
         console.log(result);
         if(result.status===200){
-            toast.success(`${result.data.username}has registered successfully`)
+            toast.success(`${result.data.username}  has registered successfully`)
             setUserData({
                 username:"",email:"",password:""
             })
@@ -30,6 +32,29 @@ function Auth({ register }) {
         }
       }
     }
+    const handleLogin = async (e)=>{
+        e.preventDefault()
+        const {email,password} = userData
+        if(!email || !password){
+            toast.info("Please fill the form completely!!!")
+        }else{
+            const result = await loginAPI(userData)
+            if(result.status===200){
+                // toast.success(${result.data.username} has registered successfully!!!)
+                sessionStorage.setItem("existingUser",JSON.stringify(result.data.existingUser))
+                sessionStorage.setItem("token",result.data.token)
+                setIsAuthorized(true)
+                setUserData({
+                    email:"",password:""
+                })
+                Navigate('/')
+            }else{
+                toast.warning(result.response.data)
+                console.log(result);
+            }
+        }
+    }
+
     return (
         <div style={{ width: '100%', height: '100vh' }} className='d-flex justify-content-center align-items-center'>
             <div className='w-75 container'>
@@ -67,7 +92,7 @@ function Auth({ register }) {
                                                 <p>Already have account? Click here to <Link to={'/login'}>Login</Link></p>
                                             </div>:
                                             <div className='mt-3'>
-                                            <button className='btn btn-light mb-2'>Login</button>
+                                            <button onClick={handleLogin} className='btn btn-light mb-2'>Login</button>
                                             <p>New User? Click here to <Link to={'/register'}>Register</Link></p>
                                         </div>
                                         }
